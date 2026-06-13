@@ -1,0 +1,12 @@
+# All files default to the project owner
+* @rosmallWS2
+
+# Test files and page objects require QA review
+tests/ @rosmallWS2
+src/pages/ @rosmallWS2
+
+# Config and framework files require careful review
+site.config.json @rosmallWS2
+playwright.config.ts @rosmallWS2
+CLAUDE.md @rosmallWS2
+AGENTS.md @rosmallWS2

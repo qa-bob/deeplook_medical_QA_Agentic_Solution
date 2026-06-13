@@ -1,23 +1,26 @@
-﻿{
-    "name":  "Deeplook Medical",
-    "url":  "https://www.deeplookmedical.com",
-    "description":  "",
-    "industry":  "",
-    "hasContactForm":  true,
-    "expectedNavItems":  [
-
-                         ],
-    "viewports":  [
-                      "desktop",
-                      "mobile",
-                      "tablet"
-                  ],
-    "skipVisual":  false,
-    "skipForms":  false,
-    "auth":  {
-                 "required":  false,
-                 "loginUrl":  "",
-                 "username":  "",
-                 "password":  ""
-             }
+{
+  "name": "Deeplook Medical",
+  "url": "https://www.deeplookmedical.com",
+  "description": "FDA-cleared AI imaging software (DL Precise™) for breast cancer detection, improving screening accuracy for radiologists",
+  "industry": "Medical Imaging / AI-Assisted Diagnostics",
+  "hasContactForm": true,
+  "expectedNavItems": [
+    "Solution",
+    "News",
+    "About",
+    "Contact Us"
+  ],
+  "viewports": [
+    "desktop",
+    "mobile",
+    "tablet"
+  ],
+  "skipVisual": false,
+  "skipForms": false,
+  "auth": {
+    "required": false,
+    "loginUrl": "",
+    "username": "",
+    "password": ""
+  }
 }

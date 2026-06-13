@@ -1,0 +1,114 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck
+
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+
+  smoke:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: [typecheck]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run smoke tests
+        run: npm run test:smoke
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-report
+          path: playwright-report/
+          retention-days: 14
+
+  functional:
+    name: Functional Tests
+    runs-on: ubuntu-latest
+    needs: [smoke]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run navigation tests
+        run: npm run test:navigation
+        env:
+          CI: 'true'
+      - name: Run form tests
+        run: npm run test:forms
+        env:
+          CI: 'true'
+      - name: Run functional tests
+        run: npx playwright test --grep @functional
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: functional-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+  responsive:
+    name: Responsive Tests
+    runs-on: ubuntu-latest
+    needs: [smoke]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run responsive tests
+        run: npm run test:responsive
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: responsive-report
+          path: playwright-report/
+          retention-days: 14

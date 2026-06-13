@@ -55,7 +55,9 @@ test.describe('Site Availability @smoke', () => {
       consoleErrors.push(`[pageerror] ${err.message}`);
     });
 
-    await page.goto(siteConfig.url, { waitUntil: 'networkidle' });
+    // Wix sites never reach networkidle (persistent background XHR from analytics/tracking).
+    // Use 'load' to capture errors emitted during the initial page load without timing out.
+    await page.goto(siteConfig.url, { waitUntil: 'load' });
 
     // Filter out known benign third-party errors (analytics, ads, etc.)
     const criticalErrors = consoleErrors.filter((err) => {
