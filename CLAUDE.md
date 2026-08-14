@@ -2,6 +2,12 @@
 
 # QA Agentic Solution — Claude Code Instructions
 
+> **Agent architecture:** See `Agent.md` in the repository root for sub-agent definitions,
+> frontmatter format, and instructions for adding new agents.
+>
+> **Slash commands:** See `Skills.md` in the repository root for the full list of available
+> `/commands` and how to create new ones.
+
 This repository is a **Playwright + TypeScript regression test suite** for the website defined in `site.config.json`. It follows a **Page Object Model (POM)** architecture and is structured for agentic execution by Claude Code.
 
 ---

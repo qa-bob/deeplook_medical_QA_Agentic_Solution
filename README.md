@@ -4,6 +4,23 @@ Playwright + TypeScript test automation framework for [deeplookmedical.com](http
 
 ---
 
+## Table of Contents
+
+- [Purpose](#purpose)
+- [Target Site](#target-site)
+- [Tech Stack](#tech-stack)
+- [Development Setup](#development-setup)
+- [Project Structure](#project-structure)
+- [Running Tests](#running-tests)
+- [Architecture](#architecture)
+- [Contributor Rules](#contributor-rules)
+- [.github Folder](#github-folder)
+- [Claude Code Configuration](#claude-code-configuration)
+- [Agent & AI Assistance](#agent--ai-assistance)
+- [CI/CD](#cicd)
+
+---
+
 ## Purpose
 
 This repository provides automated **smoke, functional, and regression** test coverage for the Deeplook Medical public website. It tests every discoverable feature — hero sections, navigation, the DL Precise™ product page, team / about page, news & press, and contact forms — without registering for accounts or submitting any forms.
@@ -232,6 +249,113 @@ This repo is structured for agentic execution. Claude Code reads `CLAUDE.md` at 
 | `/generate-report` | Generate a formatted test results summary |
 
 See `Agent.md` for the agent architecture and `Skills.md` for all available commands.
+
+---
+
+## .github Folder
+
+The `.github/` folder contains all GitHub platform configuration — CI/CD pipelines, contributor
+documentation, and templates that standardize how the project is maintained.
+
+### What belongs here and why
+
+| File / Directory | Purpose |
+|---|---|
+| `workflows/playwright.yml` | GitHub Actions CI pipeline — runs typecheck → lint → smoke → functional + responsive on every push and PR to `main` |
+| `CONTRIBUTING.md` | Step-by-step contributor guide: branch naming, pre-PR checklist, POM rules, AI-assisted generation commands |
+| `PULL_REQUEST_TEMPLATE.md` | Structured PR description — ensures every PR states what changed, what pages were tested, and ticks the compliance checklist |
+| `ISSUE_TEMPLATE/bug_report.md` | Bug report template — captures failing test name, expected vs actual behaviour, browser, and reproduction steps |
+| `ISSUE_TEMPLATE/feature_request.md` | Feature request template — scope, motivation, and acceptance criteria |
+| `CODEOWNERS` | Maps file paths to required reviewers — ensures POM changes and CI config changes get the right eyes |
+
+### What does NOT belong in `.github/`
+
+Agent definitions, slash commands, rules, and hooks all live in `.claude/` — not in `.github/`.
+The `.github/` folder is for GitHub platform features only. Claude Code reads from `.claude/`.
+
+### CI pipeline stages
+
+```
+push / pull_request to main
+│
+├── typecheck   (npm run typecheck)
+├── lint        (npm run lint)
+│
+├── smoke       (npm run test:smoke)          ← gates everything below
+│   │
+│   ├── functional  (navigation + forms + @functional tests)
+│   └── responsive  (npm run test:responsive)
+```
+
+Each stage uploads an HTML report artifact retained for 14 days. Smoke must pass before functional
+and responsive stages run, preventing wasted compute on a down site.
+
+---
+
+## Claude Code Configuration
+
+The `.claude/` folder is read by Claude Code and is separate from `.github/`. It controls how AI
+agents behave within this repository.
+
+### Configuration layers
+
+| File / Directory | What it is | When Claude reads it |
+|---|---|---|
+| `CLAUDE.md` | Root-level session instructions — loaded first in every Claude Code session | Always, at session start |
+| `AGENTS.md` | Cross-tool agent instructions for Devin, Codex, Cursor, etc. | Imported by `CLAUDE.md` via `@AGENTS.md` |
+| `.claude/agents/` | Sub-agent definitions with role, tool access, and instructions | When Claude delegates a matching task |
+| `.claude/commands/` | Slash command definitions — invoke with `/command-name` | When you type the command in a session |
+| `.claude/rules/` | Scoped rules applied automatically to files matching `paths:` | Whenever Claude reads or writes a matching file |
+| `.claude/hooks/` | Shell scripts triggered before/after Claude actions | Automatically per the hook's trigger event |
+| `.claude/settings.json` | Project-wide tool permissions and hook wiring | At session start |
+
+### What goes in each directory
+
+**`.claude/agents/`** — One Markdown file per sub-agent. Use when a task is complex enough to
+warrant its own context window and tool restrictions (e.g., `site-analyzer`, `test-generator`).
+
+**`.claude/commands/`** — One Markdown file per slash command. Use for repeatable workflows a team
+member can trigger with `/command-name` (e.g., `/run-smoke`, `/generate-full-suite`).
+
+**`.claude/rules/`** — One Markdown file per rule group, scoped to file path patterns via YAML
+frontmatter. Use to enforce code standards automatically without repeating them in every prompt
+(e.g., `playwright-pom.md` applies to `tests/**/*.spec.ts`).
+
+**`.claude/hooks/`** — Shell scripts. Use for side effects that should run around tool calls
+(e.g., `pre-test.sh` checks site reachability before any Playwright run).
+
+### Agents, Skills, Rules, and Instructions — where each lives
+
+```
+Claude Code configuration
+├── CLAUDE.md                     ← Session instructions (loaded every session)
+├── AGENTS.md                     ← Cross-tool agent compatibility
+├── Agent.md                      ← Agent architecture doc for human contributors
+├── Skills.md                     ← Skills/commands reference for human contributors
+└── .claude/
+    ├── agents/
+    │   ├── site-analyzer.md      ← Sub-agent: crawl site → site.config.json
+    │   └── test-generator.md     ← Sub-agent: generate POM + tests
+    ├── commands/
+    │   ├── analyze-site.md       ← /analyze-site
+    │   ├── generate-full-suite.md ← /generate-full-suite
+    │   ├── run-smoke.md          ← /run-smoke
+    │   ├── update-baseline.md    ← /update-baseline
+    │   └── generate-report.md    ← /generate-report
+    ├── rules/
+    │   ├── playwright-pom.md     ← Auto-applied to tests/**/*.spec.ts
+    │   └── typescript-strict.md  ← Auto-applied to src/**/*.ts
+    └── hooks/
+        └── pre-test.sh           ← Runs before any test command
+
+GitHub platform configuration
+└── .github/
+    ├── workflows/playwright.yml  ← CI/CD
+    ├── CONTRIBUTING.md           ← Contributor guide
+    ├── PULL_REQUEST_TEMPLATE.md  ← PR template
+    ├── ISSUE_TEMPLATE/           ← Bug + feature request templates
+    └── CODEOWNERS                ← Review routing
+```
 
 ---
 
