@@ -47,26 +47,20 @@ test.describe('Solution Page — DL Precise™ @functional', () => {
   test('Request a Demo button is visible @functional', async () => {
     // Mobile viewports may collapse CTAs into a hamburger menu or hide them.
     const viewport = solutionPage.page.viewportSize();
-    if (viewport && viewport.width < 768) {
-      console.warn('[functional] "Request a Demo" CTA may be hidden on mobile — skipping visibility check.');
-      return;
-    }
+    test.skip(!!viewport && viewport.width < 768, '"Request a Demo" CTA may be hidden on mobile');
     const isVisible = await solutionPage.isRequestDemoVisible();
     expect(isVisible, '"Request a Demo" CTA should be visible on the solution page').toBeTruthy();
   });
 
   test('Request a Demo button links to contact page @functional', async () => {
-    if (!(await solutionPage.isRequestDemoVisible())) return;
+    test.skip(!(await solutionPage.isRequestDemoVisible()), '"Request a Demo" CTA not visible');
     const href = await solutionPage.getRequestDemoHref();
     expect(href, 'Demo CTA should point to the contact page').toContain('contact');
   });
 
   test('Get In Touch link is present @functional', async () => {
     const link = solutionPage.getInTouchLink;
-    if (await link.count() === 0) {
-      console.warn('[functional] "Get In Touch" link not found on solution page.');
-      return;
-    }
+    test.skip(await link.count() === 0, '"Get In Touch" link not found on solution page');
     await expect(link).toBeVisible();
   });
 
@@ -74,10 +68,7 @@ test.describe('Solution Page — DL Precise™ @functional', () => {
 
   test('FDA clearance is mentioned on the solution page @functional', async () => {
     const fdaText = solutionPage.fdaMention;
-    if (await fdaText.count() === 0) {
-      console.warn('[functional] FDA mention not found — may be in a sub-section below the fold.');
-      return;
-    }
+    test.skip(await fdaText.count() === 0, 'FDA mention not found — may be in a sub-section below the fold');
     await expect(fdaText).toBeVisible();
   });
 
@@ -88,10 +79,7 @@ test.describe('Solution Page — DL Precise™ @functional', () => {
 
   test('DL Precise product name is mentioned @functional', async () => {
     const mention = solutionPage.dlPreciseMention;
-    if (await mention.count() === 0) {
-      console.warn('[functional] "DL Precise" not found on solution page.');
-      return;
-    }
+    test.skip(await mention.count() === 0, '"DL Precise" not found on solution page');
     await expect(mention).toBeVisible();
   });
 
@@ -105,10 +93,7 @@ test.describe('Solution Page — DL Precise™ @functional', () => {
 
   test('partner section is present @functional', async () => {
     const partners = solutionPage.partnerSection;
-    if (await partners.count() === 0) {
-      console.warn('[functional] Partner section not found on solution page.');
-      return;
-    }
+    test.skip(await partners.count() === 0, 'Partner section not found on solution page');
     await expect(partners).toBeVisible();
   });
 });

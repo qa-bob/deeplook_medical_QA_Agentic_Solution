@@ -33,18 +33,12 @@ test.describe('Homepage @functional', () => {
     // Wix CTA accessible names don't surface through getByRole; use text filter instead.
     // Mobile viewports may hide the CTA inside a collapsed menu.
     const viewport = homePage.page.viewportSize();
-    if (viewport && viewport.width < 768) {
-      console.warn('[functional] "Request a Demo" CTA may be hidden on mobile — skipping visibility check.');
-      return;
-    }
+    test.skip(!!viewport && viewport.width < 768, '"Request a Demo" CTA may be hidden on mobile');
     const demoLink = homePage.page
       .locator('a, button')
       .filter({ hasText: /request.*demo/i })
       .first();
-    if (await demoLink.count() === 0) {
-      console.warn('[functional] "Request a Demo" CTA not found on homepage.');
-      return;
-    }
+    test.skip(await demoLink.count() === 0, '"Request a Demo" CTA not found on homepage');
     await expect(demoLink).toBeVisible({ timeout: 10_000 });
   });
 
@@ -53,12 +47,10 @@ test.describe('Homepage @functional', () => {
       .locator('a, button')
       .filter({ hasText: /request.*demo/i })
       .first();
-    if (await demoLink.count() === 0) return;
+    test.skip(await demoLink.count() === 0, '"Request a Demo" CTA not found on homepage');
     const href = await demoLink.getAttribute('href');
-    if (!href) {
-      // CTA is a button with JS-driven navigation — href assertion not applicable.
-      return;
-    }
+    // CTA is a button with JS-driven navigation — href assertion not applicable.
+    test.skip(!href, '"Request a Demo" CTA has no href (JS-driven navigation)');
     expect(href, 'Demo CTA should have a navigation destination').toBeTruthy();
   });
 
@@ -79,10 +71,7 @@ test.describe('Homepage @functional', () => {
 
   test('Get In Touch link is present @functional', async ({ homePage }) => {
     const link = homePage.page.getByRole('link', { name: /get in touch/i }).first();
-    if (await link.count() === 0) {
-      console.warn('[functional] "Get In Touch" link not found.');
-      return;
-    }
+    test.skip(await link.count() === 0, '"Get In Touch" link not found');
     await expect(link).toBeVisible();
   });
 
@@ -98,19 +87,13 @@ test.describe('Homepage @functional', () => {
     const hasPercentage = await homePage.page.evaluate(() =>
       /\d+%/.test(document.documentElement.innerText || document.documentElement.textContent || '')
     );
-    if (!hasPercentage) {
-      console.warn('[functional] No percentage stats found in page text — may be rendered in iframe/SVG.');
-      return;
-    }
+    test.skip(!hasPercentage, 'No percentage stats found in page text — may be rendered in iframe/SVG');
     expect(hasPercentage).toBeTruthy();
   });
 
   test('homepage references DL Precise technology @functional', async ({ homePage }) => {
     const dlMention = homePage.page.locator('*').filter({ hasText: /dl precise/i }).first();
-    if (await dlMention.count() === 0) {
-      console.warn('[functional] DL Precise mention not found on homepage.');
-      return;
-    }
+    test.skip(await dlMention.count() === 0, 'DL Precise mention not found on homepage');
     await expect(dlMention).toBeVisible();
   });
 
@@ -129,10 +112,7 @@ test.describe('Homepage @functional', () => {
     const emailInput = homePage.page
       .locator('input[type="email"], input[placeholder*="email" i]')
       .first();
-    if (await emailInput.count() === 0) {
-      console.warn('[functional] No email subscription input found — may be dynamically rendered.');
-      return;
-    }
+    test.skip(await emailInput.count() === 0, 'No email subscription input found — may be dynamically rendered');
     await expect(emailInput).toBeVisible();
   });
 
@@ -141,7 +121,7 @@ test.describe('Homepage @functional', () => {
     const emailInput = homePage.page
       .locator('input[type="email"], input[placeholder*="email" i]')
       .first();
-    if (await emailInput.count() === 0) return;
+    test.skip(await emailInput.count() === 0, 'No email subscription input found');
 
     await emailInput.fill('test@example.com');
     const value = await emailInput.inputValue();
@@ -152,10 +132,7 @@ test.describe('Homepage @functional', () => {
 
   test('LinkedIn link is present @functional', async ({ homePage }) => {
     const linkedIn = homePage.page.locator('a[href*="linkedin.com"]').first();
-    if (await linkedIn.count() === 0) {
-      console.warn('[functional] No LinkedIn link found on homepage.');
-      return;
-    }
+    test.skip(await linkedIn.count() === 0, 'No LinkedIn link found on homepage');
     const href = await linkedIn.getAttribute('href');
     expect(href).toContain('linkedin.com');
   });
@@ -167,10 +144,7 @@ test.describe('Homepage @functional', () => {
     const privacyLink = homePage.page
       .getByRole('link', { name: /privacy/i })
       .first();
-    if (await privacyLink.count() === 0) {
-      console.warn('[functional] Privacy link not found in footer.');
-      return;
-    }
+    test.skip(await privacyLink.count() === 0, 'Privacy link not found in footer');
     await expect(privacyLink).toBeVisible();
   });
 });
