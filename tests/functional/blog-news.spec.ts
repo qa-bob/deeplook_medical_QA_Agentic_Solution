@@ -50,10 +50,7 @@ test.describe('News & Press Page @functional', () => {
 
   test('article links point to the same domain @functional', async ({ siteConfig }) => {
     const links = await blogPage.getArticleLinks();
-    if (links.length === 0) {
-      console.warn('[functional] No article links found — Wix blog links may use a different pattern.');
-      return;
-    }
+    test.skip(links.length === 0, 'No article links found — Wix blog links may use a different pattern');
 
     const siteOrigin = new URL(siteConfig.url).origin;
     for (const href of links) {
@@ -68,34 +65,22 @@ test.describe('News & Press Page @functional', () => {
 
   // ── Category filters ────────────────────────────────────────────────────────
   // Wix hides the blog category filter bar on mobile and tablet viewports.
-  // These tests only assert on desktop (width >= 1024px); narrower viewports log a warning.
+  // These tests run only in the chromium-desktop project.
 
-  test('"All Posts" category filter is visible @functional', async () => {
-    const viewport = blogPage.page.viewportSize();
-    if (viewport && viewport.width < 1024) {
-      console.warn('[functional] Category filters hidden at this viewport — desktop only.');
-      return;
-    }
+  test('"All Posts" category filter is visible @functional', async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium-desktop', 'Runs only in the "chromium-desktop" project');
     const isVisible = await blogPage.isAllPostsFilterVisible();
     expect(isVisible, '"All Posts" filter should be visible on desktop').toBeTruthy();
   });
 
-  test('"Insights" category filter is visible @functional', async () => {
-    const viewport = blogPage.page.viewportSize();
-    if (viewport && viewport.width < 1024) {
-      console.warn('[functional] Category filters hidden at this viewport — desktop only.');
-      return;
-    }
+  test('"Insights" category filter is visible @functional', async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium-desktop', 'Runs only in the "chromium-desktop" project');
     const isVisible = await blogPage.isInsightsFilterVisible();
     expect(isVisible, '"Insights" filter should be visible on desktop').toBeTruthy();
   });
 
-  test('"In the News" category filter is visible @functional', async () => {
-    const viewport = blogPage.page.viewportSize();
-    if (viewport && viewport.width < 1024) {
-      console.warn('[functional] Category filters hidden at this viewport — desktop only.');
-      return;
-    }
+  test('"In the News" category filter is visible @functional', async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium-desktop', 'Runs only in the "chromium-desktop" project');
     const isVisible = await blogPage.isInTheNewsFilterVisible();
     expect(isVisible, '"In the News" filter should be visible on desktop').toBeTruthy();
   });
@@ -113,8 +98,7 @@ test.describe('News & Press Page @functional', () => {
         await expect(nav).toBeVisible();
         return;
       }
-      console.warn('[functional] No home link or navigation found on blog page.');
-      return;
+      test.skip(true, 'No home link or navigation found on blog page');
     }
     await expect(homeLink).toBeVisible();
   });

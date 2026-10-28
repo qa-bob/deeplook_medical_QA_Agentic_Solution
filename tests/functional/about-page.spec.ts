@@ -67,10 +67,7 @@ test.describe('About Us Page @functional', () => {
 
   test('advisor section is present @functional', async () => {
     const advisorSection = aboutPage.advisorSection;
-    if (await advisorSection.count() === 0) {
-      console.warn('[functional] Advisor section not found on about page.');
-      return;
-    }
+    test.skip(await advisorSection.count() === 0, 'Advisor section not found on about page');
     await expect(advisorSection).toBeVisible();
   });
 
@@ -85,8 +82,7 @@ test.describe('About Us Page @functional', () => {
         await expect(generalAdvisors).toBeVisible();
         return;
       }
-      console.warn('[functional] Scientific advisor section not found.');
-      return;
+      test.skip(true, 'Scientific advisor section not found');
     }
     await expect(sciAdvisors).toBeVisible();
   });
@@ -102,10 +98,7 @@ test.describe('About Us Page @functional', () => {
 
   test('Contact Us link is present @functional', async () => {
     const link = aboutPage.contactUsLink;
-    if (await link.count() === 0) {
-      console.warn('[functional] Contact Us link not found on about page.');
-      return;
-    }
+    test.skip(await link.count() === 0, 'Contact Us link not found on about page');
     await expect(link).toBeVisible();
   });
 
@@ -114,17 +107,14 @@ test.describe('About Us Page @functional', () => {
   test('email subscription input is present in footer @functional', async () => {
     await aboutPage.scrollToFooter();
     const emailInput = aboutPage.emailSubscribeInput;
-    if (await emailInput.count() === 0) {
-      console.warn('[functional] Email subscription input not found on about page.');
-      return;
-    }
+    test.skip(await emailInput.count() === 0, 'Email subscription input not found on about page');
     await expect(emailInput).toBeVisible();
   });
 
   test('email subscription input accepts text without submitting @functional', async () => {
     await aboutPage.scrollToFooter();
     const emailInput = aboutPage.emailSubscribeInput;
-    if (await emailInput.count() === 0) return;
+    test.skip(await emailInput.count() === 0, 'Email subscription input not found on about page');
 
     await aboutPage.fillSubscribeEmail('test@example.com');
     const value = await aboutPage.getSubscribeInputValue();
